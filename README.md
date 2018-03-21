@@ -22,12 +22,12 @@ Download [pretrained GloVe vectors](https://nlp.stanford.edu/projects/glove/) an
 
 ```shell
 cd src
-PYTHONPATH=$PYTHONPATH:. python train_snli.py cbow petModel-0 --keep_rate 0.9 --seq_length 25 --emb_train --gpu
+PYTHONPATH=$PYTHONPATH:. python train_snli.py cbow petModel-0 --emb-train --gpu
 ```
 
 or if you use GPU,
 
-```
+```shell
 cd src
-PYTHONPATH=$PYTHONPATH:. python train_snli.py cbow petModel-0 --keep_rate 0.9 --seq_length 25 --emb_train
+PYTHONPATH=$PYTHONPATH:. python train_snli.py cbow petModel-0 --emb-train
 ```
