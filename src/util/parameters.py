@@ -31,7 +31,7 @@ def subtypes(s):
 
 parser.add_argument('model_type', choices=models, type=types, help='Give model type.')
 parser.add_argument('model_name', type=str, help='Give model name, this will name logs and checkpoints made. For example cbow, esim_test etc.')
-
+parser.add_argument('--input', dest='path_input', type=str, help='path to an input file')
 parser.add_argument('--datapath', type=str, default='../data')
 parser.add_argument('--ckptpath', type=str, default='../logs')
 parser.add_argument('--logpath', type=str, default='../logs')
@@ -86,6 +86,7 @@ def load_parameters():
     FIXED_PARAMETERS = {
         'model_type': args.model_type,
         'model_name': args.model_name,
+        'path_input': args.path_input,
         'training_mnli': '{}/multinli_0.9/multinli_0.9_train.jsonl'.format(args.datapath),
         'dev_matched': '{}/multinli_0.9/multinli_0.9_dev_matched.jsonl'.format(args.datapath),
         'dev_mismatched': '{}/multinli_0.9/multinli_0.9_dev_mismatched.jsonl'.format(args.datapath),

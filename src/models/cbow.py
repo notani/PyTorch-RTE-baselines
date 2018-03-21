@@ -3,13 +3,13 @@ from torch.nn import functional as F
 import torch
 
 class CBOW(nn.Module):
-    def __init__(self, hidden_dim, embeddings, keep_rate_ph):
+    def __init__(self, hidden_dim, embeddings, keep_rate):
         super(CBOW, self).__init__()
 
         ## Define hyperparameters
         self.embedding_dim = embeddings.shape[1]
         self.dim = hidden_dim
-        self.dropout_rate = 1.0 - keep_rate_ph
+        self.dropout_rate = 1.0 - keep_rate
 
         ## Define remaning parameters 
         self.E = nn.Embedding(embeddings.shape[0], self.embedding_dim, padding_idx=0)
