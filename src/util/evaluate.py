@@ -117,7 +117,7 @@ def evaluate_final(restore, classifier, eval_sets, batch_size):
     return percentages, length_results
 
 
-def make_predictions(classifier, eval_set, batch_size, name):
+def make_predictions(classifier, eval_set, name):
     """Get comma-separated CSV of predictions.
     Output file has two columns: pairID, prediction
     """
@@ -131,14 +131,12 @@ def make_predictions(classifier, eval_set, batch_size, name):
     predictions = []
     
     for i in range(len(eval_set)):
-        hypothesis = hypotheses[i]
+        hypothesis = hypotheses[1][i]
         prediction = INVERSE_MAP[hypothesis]
         pairID = eval_set[i]["pairID"]  
         predictions.append((pairID, prediction))
 
-    #predictions = sorted(predictions, key=lambda x: int(x[0]))
- 
-    f = open(name + '_predictions.csv', 'wb')
+    f = open(name + '_predictions.csv', 'wt')
     w = csv.writer(f, delimiter = ',')
     w.writerow(['pairID','gold_label'])
     for example in predictions:

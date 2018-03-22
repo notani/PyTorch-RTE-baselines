@@ -51,7 +51,10 @@ class Classifier:
         hypothesis_vectors = np.vstack([dataset[i]['sentence2_binary_parse_index_sequence']
                                         for i in indices])
         hypothesis_vectors = torch.from_numpy(hypothesis_vectors).long()
-        genres = [dataset[i]['genre'] for i in indices]
+        try:
+            genres = [dataset[i]['genre'] for i in indices]
+        except KeyError:
+            genres = [None for i in indices]
         labels = torch.LongTensor([dataset[i]['label'] for i in indices])
         if self.gpu:
             premise_vectors = premise_vectors.cuda()
@@ -166,12 +169,14 @@ class Classifier:
             self.logger.Log('Model saved to file: %s' % path)
 
     def restore(self, path):
-        self.model.load_state_dict(path)
+        self.model.load_state_dict(torch.load(path))
         self.logger.Log('Model restored from file: %s' % path)
 
-    def classify(self, examples):
+    def classify(self, examples, batch_size=None):
+        if batch_size is None:
+            batch_size = self.batch_size
         # This classifies a list of examples
-        total_batch = int(len(examples) / self.batch_size)
+        total_batch = int(len(examples) / batch_size)
         logits = np.empty(3)
         genres = []
         loss_fn = nn.CrossEntropyLoss(size_average=False)
@@ -180,7 +185,25 @@ class Classifier:
         loss = 0.0
         for i in range(total_batch):
             batch = self.get_minibatch(
-                examples, self.batch_size * i, self.batch_size * (i + 1))
+                examples, batch_size * i, batch_size * (i + 1))
+            minibatch_premise_vectors = batch[0]
+            minibatch_hypothesis_vectors = batch[1]
+            minibatch_labels = batch[2]
+            minibatch_genres = batch[3]
+            genres += minibatch_genres
+
+            logit = self.model.forward(Variable(minibatch_premise_vectors),
+                                       Variable(minibatch_hypothesis_vectors))
+            loss += float(loss_fn(logit, Variable(minibatch_labels)))
+
+            if self.gpu:
+                logit = logit.cpu()
+            logit = logit.data.numpy()
+            logits = np.vstack([logits, logit])
+
+        if batch_size * (i + 1) < len(examples):
+            batch = self.get_minibatch(
+                examples, batch_size * (i + 1), len(examples))
             minibatch_premise_vectors = batch[0]
             minibatch_hypothesis_vectors = batch[1]
             minibatch_labels = batch[2]
