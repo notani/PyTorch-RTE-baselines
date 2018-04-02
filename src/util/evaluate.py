@@ -133,12 +133,13 @@ def make_predictions(classifier, eval_set, name):
     for i in range(len(eval_set)):
         hypothesis = hypotheses[1][i]
         prediction = INVERSE_MAP[hypothesis]
-        pairID = eval_set[i]["pairID"]  
-        predictions.append((pairID, prediction))
+        pairID = eval_set[i]["pairID"]
+        gold_label = eval_set[i]["gold_label"]
+        predictions.append((pairID, prediction, gold_label))
 
     f = open(name + '_predictions.csv', 'wt')
     w = csv.writer(f, delimiter = ',')
-    w.writerow(['pairID','gold_label'])
+    w.writerow(['pairID','prediction', 'gold_label'])
     for example in predictions:
         w.writerow(example)
     f.close()
