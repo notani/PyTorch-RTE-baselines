@@ -36,14 +36,15 @@ parser.add_argument('--datapath', type=str, default='../data')
 parser.add_argument('--ckptpath', type=str, default='../logs')
 parser.add_argument('--logpath', type=str, default='../logs')
 
-parser.add_argument('--emb_to_load', type=int, default=None, help='Number of embeddings to load. If None, all embeddings are loaded.')
+parser.add_argument('--emb_to_load', type=int, default=None,
+                    help='Number of embeddings to load. If None, all embeddings are loaded.')
 parser.add_argument('--learning-rate', type=float, default=0.001,
                     help='Learning rate for model')
 parser.add_argument('--keep-rate', type=float, default=0.9,
                     help='Keep rate for dropout in the model')
 parser.add_argument('--seq-length', type=int, default=25, help='Max sequence length')
-parser.add_argument('--emb-train', action='store_true', help='Call if you want to make your word embeddings trainable.')
-
+parser.add_argument('--emb-train', action='store_true',
+                    help='Call if you want to make your word embeddings trainable.')
 parser.add_argument('--genre', type=str, help='Which genre to train on')
 parser.add_argument('--alpha', type=float, default=0., help='What percentage of SNLI data to use in training')
 

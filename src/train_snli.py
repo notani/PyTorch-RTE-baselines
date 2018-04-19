@@ -10,6 +10,7 @@ import importlib
 import os
 import random
 import torch
+import numpy as np
 
 from models.cbow import CBOW
 from models.classifier import Classifier
@@ -59,7 +60,7 @@ if not os.path.isfile(dictpath):
     sentences_to_padded_index_sequences(word_indices, datasets)
     pickle.dump(word_indices, open(dictpath, 'wb'))
 else:
-    logger.Log('Loading dictionary from %s' % (dictpath))
+    logger.Log('Loading dictionary from ' + dictpath)
     word_indices = pickle.load(open(dictpath, 'rb'))
     logger.Log('Padding and indexifying sentences')
     datasets = [training_mnli, training_snli, dev_matched, dev_mismatched,
@@ -68,14 +69,19 @@ else:
 
 # Entry point
 if __name__ == '__main__':
-    random.seed(42)
+    SEED = 42
+    random.seed(SEED)
+    np.random.seed(SEED)
+    torch.manual_seed(SEED)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(SEED)
 
     logger.Log('Loading embeddings')
     loaded_embeddings = loadEmbedding_rand(FIXED_PARAMETERS['embedding_data_path'],
                                            word_indices)
 
-    classifier = Classifier(CBOW, embeddings=loaded_embeddings,
-                            params=FIXED_PARAMETERS, gpu=gpu, logger=logger)
+    clf = Classifier(CBOW, embeddings=loaded_embeddings,
+                     params=FIXED_PARAMETERS, gpu=gpu, logger=logger)
 
     test = params.train_or_test()
 
@@ -83,18 +89,25 @@ if __name__ == '__main__':
     test_matched = dev_matched
     test_mismatched = dev_mismatched
 
+    batch_size = FIXED_PARAMETERS['batch_size']
     if test == False:
         ckpt_file = os.path.join(FIXED_PARAMETERS['ckpt_path'], modname) + '.ckpt'
-        classifier.train(training_snli, dev_snli, ckpt_file=ckpt_file)
-        logger.Log('Acc on matched multiNLI dev-set: %s' %(evaluate_classifier(classifier.classify, test_matched, FIXED_PARAMETERS['batch_size']))[0])
-        logger.Log('Acc on mismatched multiNLI dev-set: %s' %(evaluate_classifier(classifier.classify, test_mismatched, FIXED_PARAMETERS['batch_size']))[0])
-        logger.Log('Acc on SNLI test-set: %s' %(evaluate_classifier(classifier.classify, test_snli, FIXED_PARAMETERS['batch_size']))[0])
+        clf.train(training_snli, dev_snli, ckpt_file=ckpt_file)
+        logger.Log('Acc on SNLI test-set:\t{:.4f}'.format(
+            evaluate_classifier(clf.classify, test_snli, batch_size))[0])
+        logger.Log('Acc on matched multiNLI dev-set:\t{:.4f}'.format(
+            evaluate_classifier(clf.classify, test_matched, batch_size))[0])
+        logger.Log('Acc on mismatched multiNLI dev-set:\t{:.4f}'.format(
+            evaluate_classifier(clf.classify, test_mismatched, batch_size))[0])
     else:
-        results = evaluate_final(classifier.restore, classifier.classify, [test_matched, test_mismatched, test_snli], FIXED_PARAMETERS['batch_size'])
-        logger.Log('Acc on multiNLI matched dev-set: %s' %(results[0]))
-        logger.Log('Acc on multiNLI mismatched dev-set: %s' %(results[1]))
-        logger.Log('Acc on SNLI test set: %s' %(results[2]))
+        results = evaluate_final(
+            clf.restore, clf.classify, [test_matched, test_mismatched, test_snli], batch_size)
+        logger.Log('Acc on SNLI test set: {:.4f}'.format(results[2]))
+        logger.Log('Acc on multiNLI matched dev-set\t: {:.4f}'.format(results[0]))
+        logger.Log('Acc on multiNLI mismatched dev-set: {:.4f}'.format(results[1]))
 
         # Results by genre,
-        logger.Log('Acc on matched genre dev-sets: %s' %(evaluate_classifier_genre(classifier.classify, test_matched, FIXED_PARAMETERS['batch_size'])[0]))
-        logger.Log('Acc on mismatched genres dev-sets: %s' %(evaluate_classifier_genre(classifier.classify, test_mismatched, FIXED_PARAMETERS['batch_size'])[0]))
+        logger.Log('Acc on matched genre dev-sets: {:.4f}'.format(
+            evaluate_classifier_genre(clf.classify, test_matched, batch_size)[0]))
+        logger.Log('Acc on mismatched genres dev-sets: {:.4f}'.format(
+            evaluate_classifier_genre(clf.classify, test_mismatched, batch_size)[0]))

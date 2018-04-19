@@ -32,7 +32,7 @@ class Classifier:
         self.keep_rate = params['keep_rate']
         self.alpha = params['alpha']
 
-        self.logger.Log('Building model from %s.py' %(model))
+        self.logger.Log('Building model: ' + model.__name__)
         self.model = model(hidden_dim=self.dim,
                            embeddings=embeddings,
                            keep_rate=self.keep_rate)
@@ -116,6 +116,7 @@ class Classifier:
 
                 # Run the optimizer to take a gradient step, and also fetch the value of the 
                 # cost function
+                optimizer.zero_grad()
                 logit = self.model.forward(Variable(minibatch_premise_vectors),
                                            Variable(minibatch_hypothesis_vectors))
                 loss = loss_fn(logit, Variable(minibatch_labels))
