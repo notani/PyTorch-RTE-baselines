@@ -94,11 +94,11 @@ if __name__ == '__main__':
         ckpt_file = os.path.join(FIXED_PARAMETERS['ckpt_path'], modname) + '.ckpt'
         clf.train(training_snli, dev_snli, ckpt_file=ckpt_file)
         logger.Log('Acc on SNLI test-set:\t{:.4f}'.format(
-            evaluate_classifier(clf.classify, test_snli, batch_size))[0])
+            evaluate_classifier(clf.classify, test_snli, batch_size)[0]))
         logger.Log('Acc on matched multiNLI dev-set:\t{:.4f}'.format(
-            evaluate_classifier(clf.classify, test_matched, batch_size))[0])
+            evaluate_classifier(clf.classify, test_matched, batch_size)[0]))
         logger.Log('Acc on mismatched multiNLI dev-set:\t{:.4f}'.format(
-            evaluate_classifier(clf.classify, test_mismatched, batch_size))[0])
+            evaluate_classifier(clf.classify, test_mismatched, batch_size)[0]))
     else:
         results = evaluate_final(
             clf.restore, clf.classify, [test_matched, test_mismatched, test_snli], batch_size)
