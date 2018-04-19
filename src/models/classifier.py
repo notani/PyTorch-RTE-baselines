@@ -118,7 +118,8 @@ class Classifier:
                 # cost function
                 optimizer.zero_grad()
                 logit = self.model.forward(Variable(minibatch_premise_vectors),
-                                           Variable(minibatch_hypothesis_vectors))
+                                           Variable(minibatch_hypothesis_vectors),
+                                           train=True)
                 loss = loss_fn(logit, Variable(minibatch_labels))
                 loss.backward()
                 optimizer.step()
@@ -165,13 +166,15 @@ class Classifier:
                 break
 
     def save(self, path, quiet=False):
+        """Save model parameters."""
         torch.save(self.model.state_dict(), path)
         if not quiet:
-            self.logger.Log('Model saved to file: %s' % path)
+            self.logger.Log('Model saved to file: ' + path)
 
     def restore(self, path):
+        """Restore model parameters."""
         self.model.load_state_dict(torch.load(path))
-        self.logger.Log('Model restored from file: %s' % path)
+        self.logger.Log('Model restored from file: ' + path)
 
     def classify(self, examples, batch_size=None):
         if batch_size is None:
@@ -194,7 +197,8 @@ class Classifier:
             genres += minibatch_genres
 
             logit = self.model.forward(Variable(minibatch_premise_vectors),
-                                       Variable(minibatch_hypothesis_vectors))
+                                       Variable(minibatch_hypothesis_vectors),
+                                       train=False)
             loss += float(loss_fn(logit, Variable(minibatch_labels)))
 
             if self.gpu:
@@ -212,7 +216,8 @@ class Classifier:
             genres += minibatch_genres
 
             logit = self.model.forward(Variable(minibatch_premise_vectors),
-                                       Variable(minibatch_hypothesis_vectors))
+                                       Variable(minibatch_hypothesis_vectors),
+                                       train=False)
             loss += float(loss_fn(logit, Variable(minibatch_labels)))
 
             if self.gpu:

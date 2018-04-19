@@ -100,14 +100,15 @@ if __name__ == '__main__':
         logger.Log('Acc on mismatched multiNLI dev-set:\t{:.4f}'.format(
             evaluate_classifier(clf.classify, test_mismatched, batch_size)[0]))
     else:
-        results = evaluate_final(
-            clf.restore, clf.classify, [test_matched, test_mismatched, test_snli], batch_size)
+        clf.restore(os.path.join(FIXED_PARAMETERS['ckpt_path'], modname) + '.ckpt_best')
+        results, _ = evaluate_final(
+            clf.classify, [test_matched, test_mismatched, test_snli], batch_size)
         logger.Log('Acc on SNLI test set: {:.4f}'.format(results[2]))
         logger.Log('Acc on multiNLI matched dev-set\t: {:.4f}'.format(results[0]))
         logger.Log('Acc on multiNLI mismatched dev-set: {:.4f}'.format(results[1]))
 
         # Results by genre,
-        logger.Log('Acc on matched genre dev-sets: {:.4f}'.format(
+        logger.Log('Acc on matched genre dev-sets: {}'.format(
             evaluate_classifier_genre(clf.classify, test_matched, batch_size)[0]))
-        logger.Log('Acc on mismatched genres dev-sets: {:.4f}'.format(
+        logger.Log('Acc on mismatched genres dev-sets: {}'.format(
             evaluate_classifier_genre(clf.classify, test_mismatched, batch_size)[0]))
