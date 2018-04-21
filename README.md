@@ -12,7 +12,7 @@ data/
   snli_1.0/
     (files from SNLI v1.0)
   multinli_0.9/
-    (files from SNLI v0.9)
+    (files from MultiNLI v0.9)
 ```
 
 Download [pretrained GloVe vectors](https://nlp.stanford.edu/projects/glove/) and put them in `data/glove.840B.300d.txt` (840B token, 300 dimensions)
@@ -22,12 +22,12 @@ Download [pretrained GloVe vectors](https://nlp.stanford.edu/projects/glove/) an
 
 ```shell
 cd src
-PYTHONPATH=$PYTHONPATH:. python train_snli.py cbow petModel-0 --emb-train --gpu
+
+# Use scene graphs
+PYTHONPATH=$PYTHONPATH:. python train_snli.py cbow petModel-cbowsg --emb-train --path-train ../data/snli_1.0/snli_1.0_train.spatial.sg.jsonl --path-dev ../data/snli_1.0/snli_1.0_dev.spatial.sg.jsonl --path-test ../data/snli_1.0/snli_1.0_test.spatial.sg.jsonl --sg --gpu
+
+# Do not use scene graphs
+PYTHONPATH=$PYTHONPATH:. python train_snli.py cbow petModel-cbow --emb-train --path-train ../data/snli_1.0/snli_1.0_train.spatial.sg.jsonl --path-dev ../data/snli_1.0/snli_1.0_dev.spatial.sg.jsonl --path-test ../data/snli_1.0/snli_1.0_test.spatial.sg.jsonl --gpu
 ```
 
-or if you use GPU,
-
-```shell
-cd src
-PYTHONPATH=$PYTHONPATH:. python train_snli.py cbow petModel-0 --emb-train
-```
+Note: you may want to set `OMP_NUM_THREADS=1` so that pytorch does not occupy all the available CPU cores.
