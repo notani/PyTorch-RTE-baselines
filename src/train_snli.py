@@ -86,24 +86,14 @@ if __name__ == '__main__':
 
     batch_size = args['batch_size']
     if test:  # test only
-        # Load MultiNLI datasets
-        dev_matched = load_nli_data(args['dev_matched'])
-        dev_mismatched = load_nli_data(args['dev_mismatched'])
-        datasets = [dev_matched, dev_mismatched]
-        sentences_to_padded_index_sequences(word_indices, datasets)
-
         clf.restore(os.path.join(args['ckpt_path'], modname) + '.ckpt_best')
         results, _ = evaluate_final(
-            clf.classify, [test_snli, dev_matched, dev_mismatched], batch_size)
-        logger.Log('Acc on SNLI test set: {:.4f}'.format(results[0]))
-        logger.Log('Acc on multiNLI matched dev-set\t: {:.4f}'.format(results[1]))
-        logger.Log('Acc on multiNLI mismatched dev-set: {:.4f}'.format(results[2]))
+            clf.classify, [test_snli], batch_size)
+        logger.Log('Acc on Test set: {:.4f}'.format(results[0]))
 
         # Results by genre,
-        logger.Log('Acc on matched genre dev-sets: {}'.format(
-            evaluate_classifier_genre(clf.classify, test_matched, batch_size)[0]))
-        logger.Log('Acc on mismatched genres dev-sets: {}'.format(
-            evaluate_classifier_genre(clf.classify, test_mismatched, batch_size)[0]))
+        logger.Log('Acc by genre: {}'.format(
+            evaluate_classifier_genre(clf.classify, test_snli, batch_size)[0]))
     else:
         ckpt_file = os.path.join(args['ckpt_path'], modname) + '.ckpt'
         clf.train(training_snli, dev_snli, ckpt_file=ckpt_file)

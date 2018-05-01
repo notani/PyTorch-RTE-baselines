@@ -29,24 +29,24 @@ class CBOWSG(nn.Module):
         self.W_1 = nn.Linear(self.dim, self.dim)
         self.W_2 = nn.Linear(self.dim, self.dim)
         self.W_out = nn.Linear(self.dim, 3)
-        self.W_enc_attr = nn.Linear(self.embedding_dim, self.embedding_dim, bias=False) # nn.Parameter(torch.zeros(self.embedding_dim, self.embedding_dim))
-        self.W_enc_pred = nn.Linear(self.embedding_dim, self.embedding_dim, bias=False) # nn.Parameter(torch.zeros(self.embedding_dim, self.embedding_dim))
-        self.W_enc_objt = nn.Linear(self.embedding_dim, self.embedding_dim, bias=False) # nn.Parameter(torch.zeros(self.embedding_dim, self.embedding_dim))
+        self.W_enc_attr = nn.Linear(self.embedding_dim, self.embedding_dim, bias=False)
+        self.W_enc_pred = nn.Linear(self.embedding_dim, self.embedding_dim, bias=False)
+        self.W_enc_objt = nn.Linear(self.embedding_dim, self.embedding_dim, bias=False)
         self.W_enc = [self.W_enc_attr, self.W_enc_pred, self.W_enc_objt]
         self.initialize_weights()
 
     def initialize_weights(self):
         """Initialize model weights."""
-        nn.init.normal(self.W_0.weight, std=0.1)
-        nn.init.normal(self.W_0.bias, std=0.1)
-        nn.init.normal(self.W_1.weight, std=0.1)
-        nn.init.normal(self.W_1.bias, std=0.1)
-        nn.init.normal(self.W_2.weight, std=0.1)
-        nn.init.normal(self.W_2.bias, std=0.1)
-        nn.init.normal(self.W_out.weight, std=0.1)
-        nn.init.normal(self.W_out.bias, std=0.1)
+        nn.init.normal_(self.W_0.weight, std=0.1)
+        nn.init.normal_(self.W_0.bias, std=0.1)
+        nn.init.normal_(self.W_1.weight, std=0.1)
+        nn.init.normal_(self.W_1.bias, std=0.1)
+        nn.init.normal_(self.W_2.weight, std=0.1)
+        nn.init.normal_(self.W_2.bias, std=0.1)
+        nn.init.normal_(self.W_out.weight, std=0.1)
+        nn.init.normal_(self.W_out.bias, std=0.1)
         for W in self.W_enc:
-            nn.init.normal(W.weight, std=0.1)
+            nn.init.normal_(W.weight, std=0.1)
 
     def encode_sg(self, sg, seq, train=False):
         if sg.word_idx == -1:  # root
@@ -72,9 +72,9 @@ class CBOWSG(nn.Module):
                 h = self.W_enc[rel_id](h)
             children.append(h)
         agg = torch.cat(children, dim=0) # aggregate children
-        agg = word * agg.sum(dim=0)
         if train:
             agg = F.dropout(agg, p=self.dropout_rate)
+        agg = word * agg.mean(dim=0)
         return F.relu(agg)
 
     def forward(self, premise_x, hypothesis_x, premise_sg, hypothesis_sg, train=False):

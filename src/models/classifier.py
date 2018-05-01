@@ -45,10 +45,10 @@ class Classifier:
 
     def get_minibatch(self, dataset, start_index, end_index):
         indices = range(start_index, end_index)
-        premise_vectors = np.vstack([dataset[i]['sentence1_binary_parse_index_sequence']
+        premise_vectors = np.vstack([dataset[i]['sentence1_index_sequence']
                                      for i in indices])
         premise_vectors = torch.from_numpy(premise_vectors).long()
-        hypothesis_vectors = np.vstack([dataset[i]['sentence2_binary_parse_index_sequence']
+        hypothesis_vectors = np.vstack([dataset[i]['sentence2_index_sequence']
                                         for i in indices])
         hypothesis_vectors = torch.from_numpy(hypothesis_vectors).long()
         try:

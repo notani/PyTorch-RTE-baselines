@@ -100,7 +100,7 @@ def load_parameters():
         'training_snli': args.path_train,
         'dev_snli': args.path_dev,
         'test_snli': args.path_test,
-        'embedding_data_path': '{}/glove.840B.300d.txt'.format(args.datapath),
+        'embedding_data_path': '{}/glove.6B.300d.txt'.format(args.datapath),
         'log_path': '{}'.format(args.logpath),
         'ckpt_path':  '{}'.format(args.ckptpath),
         'embeddings_to_load': args.emb_to_load,
