@@ -171,9 +171,10 @@ class Classifier:
         if not quiet:
             self.logger.Log('Model saved to file: ' + path)
 
-    def restore(self, path):
+    def restore(self, path, gpu=True):
         """Restore model parameters."""
-        self.model.load_state_dict(torch.load(path))
+        map_location = 'gpu' if gpu else 'cpu'
+        self.model.load_state_dict(torch.load(path), map_location=map_location)
         self.logger.Log('Model restored from file: ' + path)
 
     def classify(self, examples, batch_size=None):

@@ -31,3 +31,13 @@ PYTHONPATH=$PYTHONPATH:. python train_snli.py cbow petModel-cbow --emb-train --p
 ```
 
 Note: you may want to set `OMP_NUM_THREADS=1` so that pytorch does not occupy all the available CPU cores.
+
+
+# Prediction
+
+```shell
+cd src
+
+CUDA_VISIBLE_DEVICES=3 PYTHONPATH=$PYTHONPATH:. python predictions.py cbow multinli-cbow --input ../data/multinli_1.0/multinli_1.0_dev_matched.spatial.sg.jsonl
+CUDA_VISIBLE_DEVICES=3 PYTHONPATH=$PYTHONPATH:. python predictions.py cbow multinli-cbowsg --input ../data/multinli_1.0/multinli_1.0_dev_matched.spatial.sg.jsonl --sg
+```

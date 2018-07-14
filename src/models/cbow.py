@@ -33,14 +33,14 @@ class CBOW(nn.Module):
 
     def initialize_weights(self):
         """Initialize model weights."""
-        nn.init.normal(self.W_0.weight, std=0.1)
-        nn.init.normal(self.W_0.bias, std=0.1)
-        nn.init.normal(self.W_1.weight, std=0.1)
-        nn.init.normal(self.W_1.bias, std=0.1)
-        nn.init.normal(self.W_2.weight, std=0.1)
-        nn.init.normal(self.W_2.bias, std=0.1)
-        nn.init.normal(self.W_out.weight, std=0.1)
-        nn.init.normal(self.W_out.bias, std=0.1)
+        nn.init.normal_(self.W_0.weight, std=0.1)
+        nn.init.normal_(self.W_0.bias, std=0.1)
+        nn.init.normal_(self.W_1.weight, std=0.1)
+        nn.init.normal_(self.W_1.bias, std=0.1)
+        nn.init.normal_(self.W_2.weight, std=0.1)
+        nn.init.normal_(self.W_2.bias, std=0.1)
+        nn.init.normal_(self.W_out.weight, std=0.1)
+        nn.init.normal_(self.W_out.bias, std=0.1)
 
     def forward(self, premise_x, hypothesis_x, train=False):
         # Calculate representaitons by CBOW method
@@ -234,10 +234,10 @@ class Classifier:
         if not quiet:
             self.logger.Log('Model saved to file: ' + path)
 
-    def restore(self, path):
+    def restore(self, path, gpu=True):
         """Restore model parameters."""
-        self.model.load_state_dict(torch.load(path))
-        self.logger.Log('Model restored from file: ' + path)
+        map_location = 'gpu' if gpu else 'cpu'
+        self.model.load_state_dict(torch.load(path, map_location=map_location))
 
     def classify(self, examples, batch_size=None):
         if batch_size is None:

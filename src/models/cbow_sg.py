@@ -283,10 +283,10 @@ class Classifier:
         if not quiet:
             self.logger.Log('Model saved to file: ' + path)
 
-    def restore(self, path):
+    def restore(self, path, gpu=True):
         """Restore model parameters."""
-        self.model.load_state_dict(torch.load(path))
-        self.logger.Log('Model restored from file: ' + path)
+        map_location = 'gpu' if gpu else 'cpu'
+        self.model.load_state_dict(torch.load(path, map_location=map_location))
 
     def classify(self, examples, batch_size=None):
         if batch_size is None:
@@ -344,3 +344,4 @@ class Classifier:
             logits = np.vstack([logits, logit])
 
         return genres, np.argmax(logits[1:], axis=1), loss
+
